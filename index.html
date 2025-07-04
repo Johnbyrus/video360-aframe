@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Video 360 con Interacción - A-Frame</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+      <!-- Video 360 -->
+      <a-assets>
+        <video id="video360" autoplay loop muted playsinline crossorigin="anonymous" preload="auto">
+          <source src="assets/tu_video_360.mp4" type="video/mp4">
+        </video>
+      </a-assets>
+
+      <a-videosphere src="#video360" rotation="0 -90 0"></a-videosphere>
+
+      <!-- Cámara con cursor -->
+      <a-camera position="0 1.6 0">
+        <a-cursor fuse="false" raycaster="objects: .clickable"></a-cursor>
+      </a-camera>
+
+      <!-- Hotspot interactivo -->
+      <a-entity id="hotspot"
+                class="clickable"
+                geometry="primitive: ring; radiusInner: 0.2; radiusOuter: 0.3;"
+                material="color: #FF0000; shader: flat"
+                position="3 2 -4"
+                look-at="[camera]">
+      </a-entity>
+
+      <!-- Diálogo oculto -->
+      <a-entity id="dialog"
+                geometry="primitive: plane; height: 1; width: 2"
+                material="color: white; opacity: 0.8"
+                position="0 2 -3"
+                visible="false"
+                text="value: Bienvenido a la interacción; align: center; color: black; wrapCount: 30;">
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const hotspot = document.querySelector('#hotspot');
+      const dialog = document.querySelector('#dialog');
+
+      hotspot.addEventListener('click', () => {
+        dialog.setAttribute('visible', true);
+
+        // Oculta el cuadro después de 5 segundos
+        setTimeout(() => {
+          dialog.setAttribute('visible', false);
+        }, 5000);
+      });
+    </script>
+  </body>
+</html>
