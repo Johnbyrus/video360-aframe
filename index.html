@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,7 +11,7 @@
       <!-- Video 360 -->
       <a-assets>
         <video id="video360" autoplay loop muted playsinline crossorigin="anonymous" preload="auto">
-          <source src="assets/tu_video_360.mp4" type="video/mp4">
+          <source src="assets/lab_hidraulica.mp4" type="video/mp4">
         </video>
       </a-assets>
 
@@ -21,37 +22,110 @@
         <a-cursor fuse="false" raycaster="objects: .clickable"></a-cursor>
       </a-camera>
 
-      <!-- Hotspot interactivo -->
-      <a-entity id="hotspot"
+      <!-- 🔴 Botón 1: mensaje -->
+      <a-entity id="boton1"
                 class="clickable"
                 geometry="primitive: ring; radiusInner: 0.2; radiusOuter: 0.3;"
-                material="color: #FF0000; shader: flat"
+                material="color: red; shader: flat"
                 position="3 2 -4"
                 look-at="[camera]">
       </a-entity>
 
-      <!-- Diálogo oculto -->
-      <a-entity id="dialog"
+      <!-- 🔵 Botón 2: pregunta -->
+      <a-entity id="boton2"
+                class="clickable"
+                geometry="primitive: ring; radiusInner: 0.2; radiusOuter: 0.3;"
+                material="color: blue; shader: flat"
+                position="-3 2 -4"
+                look-at="[camera]">
+      </a-entity>
+
+      <!-- Cuadro de mensaje -->
+      <a-entity id="mensaje-panel"
                 geometry="primitive: plane; height: 1; width: 2"
                 material="color: white; opacity: 0.8"
                 position="0 2 -3"
                 visible="false"
                 text="value: Bienvenido a la interacción; align: center; color: black; wrapCount: 30;">
       </a-entity>
+
+      <!-- Panel de pregunta -->
+      <a-entity id="quiz-panel" visible="false" position="0 2 -3">
+        <a-plane height="2" width="3" color="#FFFFFF" opacity="0.95"></a-plane>
+        <a-text value="¿La suma de 1 + 1 es?" color="black" width="2.5" position="0 0.7 0" align="center"></a-text>
+
+        <a-entity class="clickable" geometry="primitive: plane; height: 0.4; width: 2"
+                  material="color: #ccc" position="0 0.2 0"
+                  text="value: A. 3; color: black; align: center"
+                  id="op1"></a-entity>
+
+        <a-entity class="clickable" geometry="primitive: plane; height: 0.4; width: 2"
+                  material="color: #ccc" position="0 -0.3 0"
+                  text="value: B. 2; color: black; align: center"
+                  id="op2"></a-entity>
+
+        <a-entity class="clickable" geometry="primitive: plane; height: 0.4; width: 2"
+                  material="color: #ccc" position="0 -0.8 0"
+                  text="value: C. 0; color: black; align: center"
+                  id="op3"></a-entity>
+      </a-entity>
     </a-scene>
 
     <script>
-      const hotspot = document.querySelector('#hotspot');
-      const dialog = document.querySelector('#dialog');
+      const boton1 = document.querySelector('#boton1');
+      const boton2 = document.querySelector('#boton2');
+      const mensajePanel = document.querySelector('#mensaje-panel');
+      const quizPanel = document.querySelector('#quiz-panel');
+      const op1 = document.querySelector('#op1');
+      const op2 = document.querySelector('#op2');
+      const op3 = document.querySelector('#op3');
 
-      hotspot.addEventListener('click', () => {
-        dialog.setAttribute('visible', true);
+      function mostrarBotones() {
+        boton1.setAttribute('visible', true);
+        boton2.setAttribute('visible', true);
+      }
 
-        // Oculta el cuadro después de 5 segundos
+      function ocultarBotones() {
+        boton1.setAttribute('visible', false);
+        boton2.setAttribute('visible', false);
+      }
+
+      boton1.addEventListener('click', () => {
+        ocultarBotones();
+        mensajePanel.setAttribute('visible', true);
         setTimeout(() => {
-          dialog.setAttribute('visible', false);
-        }, 5000);
+          mensajePanel.setAttribute('visible', false);
+          mostrarBotones();
+        }, 4000);
       });
+
+      boton2.addEventListener('click', () => {
+        ocultarBotones();
+        quizPanel.setAttribute('visible', true);
+      });
+
+      function responder(correcto) {
+        quizPanel.setAttribute('visible', false);
+
+        const mensaje = document.createElement('a-text');
+        mensaje.setAttribute('value', correcto ? '✅ ¡Correcto!' : '❌ Incorrecto');
+        mensaje.setAttribute('position', '0 2 -3');
+        mensaje.setAttribute('align', 'center');
+        mensaje.setAttribute('color', correcto ? 'green' : 'red');
+        mensaje.setAttribute('width', '2.5');
+        mensaje.setAttribute('id', 'feedback');
+        document.querySelector('a-scene').appendChild(mensaje);
+
+        setTimeout(() => {
+          const old = document.querySelector('#feedback');
+          if (old) old.remove();
+          mostrarBotones();
+        }, 3000);
+      }
+
+      op1.addEventListener('click', () => responder(false));
+      op2.addEventListener('click', () => responder(true));
+      op3.addEventListener('click', () => responder(false));
     </script>
   </body>
 </html>
